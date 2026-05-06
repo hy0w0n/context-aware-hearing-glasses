@@ -1,0 +1,23 @@
+[33mcommit 9310ad0d2156ad12c8f1a9019fd1b051a89a0879[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/app[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/feature/app[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: HyoWon <the_butterfly_effect@naver.com>
+Date:   Sat Apr 18 19:52:29 2026 +0900
+
+    chore: requirements.txt 오타 수정
+
+[33mcommit 975fb996290c8593f064771c9417a1341e658d40[m
+Author: HyoWon <the_butterfly_effect@naver.com>
+Date:   Sat Apr 18 19:45:57 2026 +0900
+
+    chore: 초기 환경 설정 및 requirements.txt 추가
+
+[33mcommit 4452a0bee2f4501633ed6070d89ca3e58bb08ca0[m
+Author: Jay <the_butterfly_effect@naver.com>
+Date:   Sat Apr 18 19:16:45 2026 +0900
+
+    Add .gitignore file for Python project
+
+[33mcommit 43a0e01be836367ce318ef95af43e2e375eca7cc[m
+Author: Jay <the_butterfly_effect@naver.com>
+Date:   Sat Apr 18 17:35:07 2026 +0900
+
+    Initial commit
