@@ -2,5 +2,5 @@ fastapi==0.136.0
 uvicorn==0.44.0
 python-multipart==0.0.26
 openai==2.34.0
-openai-whisper==20250625
-setuptools-rust==1.12.1
+pydub==0.25.1
+audioop-lts==0.2.2
