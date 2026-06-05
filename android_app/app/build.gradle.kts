@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.apitest"
+    namespace = "com.example.smarthearing"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.apitest"
+        applicationId = "com.example.smarthearing"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0") // 통신 도구
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

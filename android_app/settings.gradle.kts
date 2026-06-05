@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ApiTest"
+rootProject.name = "SmartHearing"
 include(":app")
  

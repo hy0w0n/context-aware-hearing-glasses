@@ -1,4 +1,4 @@
-package com.example.apitest;
+package com.example.smarthearing;
 
 import org.junit.Test;
 
