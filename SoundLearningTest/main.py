@@ -51,3 +51,4 @@ async def analyze_sound(audio_file: UploadFile = File(...)):
     finally:
         if os.path.exists(temp_file):
             os.remove(temp_file)
+            
