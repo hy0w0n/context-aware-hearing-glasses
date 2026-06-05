@@ -17,7 +17,7 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 Application startup complete. 라는 초록색 글씨가 뜨면 서버가 정상적으로 켜진 거예용 (앱을 테스트하는 동안 이 터미널 창 끄면 안됨)
 
 ## 안드로이드 스튜디오 실행
-### 1. 내 컴퓨터 IP 주소 찾기 (중요★)
+### 1. 내 컴퓨터 IP 주소 찾기
 (장소가 바뀌거나 와이파이가 바뀌면 IP도 바뀜)
 
 window cmd(명령 프롬프트)실행
