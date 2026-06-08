@@ -6,6 +6,9 @@
 ## 서버 세팅 및 실행 (VS Code실행)
 ### 1. Python 3.10.11버전 설치 후 vscode 터미널로 ai_venv 라는 이름의 파이썬 3.10 가상환경 생성 (각자 Python 3.10 설치 필수)
 py -3.10 -m venv ai_venv
+### 1-2. 만든 가상환경으로 들어가기
+cd SoundLearningTest
+.\ai_venv\Scripts\activate
 
 ### 2. 필요한 AI 도구 및 서버 도구 한 번에 설치
 pip install fastapi uvicorn tensorflow tensorflow-hub librosa python-multipart
