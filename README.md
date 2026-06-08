@@ -30,7 +30,7 @@ window cmd(명령 프롬프트)실행
 ipconfig 
 
 목록 중에서 무선 LAN 어댑터 Wi-Fi (또는 이더넷) 항목 아래에 있는 IPv4 주소 (예: 192.168.x.x)를 찾아 안드로이드스튜디오 내 MainActivity.java 파일의 110번째 줄 근처
-serverUrl 주소 부분에 아까 2단계에서 찾은 본인의 IPv4 주소로 수정
+serverUrl 주소 부분에 본인의 IPv4 주소로 수정
 
 // ↓ 
 
