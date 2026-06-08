@@ -8,6 +8,7 @@
 py -3.10 -m venv ai_venv
 ### 1-2. 만든 가상환경으로 들어가기
 cd SoundLearningTest
+
 .\ai_venv\Scripts\activate
 
 ### 2. 필요한 AI 도구 및 서버 도구 한 번에 설치
