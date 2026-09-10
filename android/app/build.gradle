@@ -1,0 +1,43 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.smartglass.test'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.smartglass.test"
+        minSdk 26
+        targetSdk 36
+        versionCode 1
+        versionName "0.1"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    androidResources {
+        noCompress 'tflite'   // 모델을 mmap으로 로드 — APK 압축 금지 (2026-09-10 이미지 분류)
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    // 이미지 분류 (image_model, 통합 1단계). 모델 min_runtime=2.17.0(변환기 TF 2.20)이라
+    // 구 org.tensorflow:tensorflow-lite(≤2.16)로는 FULLY_CONNECTED v12 미지원 → 후속 LiteRT 사용
+    // (클래스 경로는 org.tensorflow.lite.* 그대로 — 코드 무변경)
+    implementation 'com.google.ai.edge.litert:litert:1.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'      // PTT→LLM 인텐트 분류 (ptt_module 이식, 통합 2단계)
+}
