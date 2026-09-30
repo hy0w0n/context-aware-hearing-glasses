@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SmartGlass 수신 테스트"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <RadioGroup
+                android:id="@+id/rgTransport"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbWifi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="WiFi" />
+
+                <RadioButton
+                    android:id="@+id/rbBle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BLE" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btnConnect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="연결" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="대기 — 전송로 선택 후 [연결]"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvStats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="-"
+            android:textSize="12sp" />
+
+        <com.smartglass.test.WaveformView
+            android:id="@+id/wave"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_marginTop="6dp" />
+
+        <TextView
+            android:id="@+id/tvLevels"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="mic1 -    mic2 -    mic3 -"
+            android:textSize="12sp" />
+
+        <ToggleButton
+            android:id="@+id/tbListen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOff="실시간 듣기 OFF"
+            android:textOn="실시간 듣기 ON (이어폰 권장)" />
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginTop="6dp"
+            android:background="#22000000"
+            android:contentDescription="camera"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/tvImgInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="이미지 수신 대기"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvClassify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#1400AA00"
+            android:fontFamily="monospace"
+            android:padding="4dp"
+            android:text="분류: 이미지 수신 대기 (imageModel.tflite)"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvSound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#140066AA"
+            android:fontFamily="monospace"
+            android:padding="4dp"
+            android:text="소리: 오디오 수신 대기 (soundModel.tflite)"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ToggleButton
+                android:id="@+id/tbAuto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOff="자동모드 OFF"
+                android:textOn="자동모드 ON"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvAutoInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:text="수동 · 현재 모드: 실내"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/btnMode0" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="실내" android:textSize="11sp" />
+            <Button android:id="@+id/btnMode1" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="야외" android:textSize="11sp" />
+            <Button android:id="@+id/btnMode2" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="TV" android:textSize="11sp" />
+            <Button android:id="@+id/btnMode3" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="1:1" android:textSize="11sp" />
+            <Button android:id="@+id/btnMode4" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="다인" android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/btnVolDown" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="VOL−" android:textSize="11sp" />
+            <Button android:id="@+id/btnVolUp" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="VOL+" android:textSize="11sp" />
+            <Button android:id="@+id/btnAlert" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="알림!" android:textSize="11sp" />
+            <Button android:id="@+id/btnCapture" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="촬영" android:textSize="11sp" />
+            <Button android:id="@+id/btnPing" style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="PING" android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnVoice"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🎤 음성명령 (PTT 대용)"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btnSoundTest"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🔊 소리모델 자가시험"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="이벤트 로그 (PTT 버튼 · 음성명령)"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <ScrollView
+            android:id="@+id/svEvents"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:background="#14000000">
+
+            <TextView
+                android:id="@+id/tvEvents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:padding="6dp"
+                android:textSize="11sp" />
+        </ScrollView>
+    </LinearLayout>
+</ScrollView>

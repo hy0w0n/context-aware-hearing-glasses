@@ -1,0 +1,5 @@
+// SmartGlass 테스트 앱 — 펌웨어 수신 검증용 (proto.md §5)
+plugins {
+    id 'com.android.application' version '8.13.0' apply false
+    id 'org.jetbrains.kotlin.android' version '2.1.0' apply false
+}

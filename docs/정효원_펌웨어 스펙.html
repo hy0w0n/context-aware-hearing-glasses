@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>펌웨어 및 하드웨어 제어 설계 명세서</title>
+    <style>
+        :root {
+            --primary: #047857; /* 펌웨어 특화 그린 톤 */
+            --secondary: #334155;
+            --accent: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --danger: #e11d48;
+            --highlight: #f59e0b;
+        }
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background-color: var(--bg);
+            color: #1e293b;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary), #064e3b);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .header h1 { margin: 0 0 10px 0; font-size: 28px; }
+        .header p { margin: 0; opacity: 0.9; }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary);
+        }
+        h2 { color: var(--secondary); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 0; display: flex; align-items: center; gap: 8px;}
+        h3 { color: var(--primary); margin-bottom: 10px; font-size: 18px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            vertical-align: top;
+        }
+        th { background-color: #f1f5f9; font-weight: 700; width: 22%; color: #475569; }
+        .reason-box {
+            background: #f0fdf4;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            font-size: 0.95em;
+            margin-top: 10px;
+        }
+        .milestone-box {
+            background: #fffbeb;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #fde68a;
+            margin-top: 15px;
+        }
+        .milestone-box h3 { color: #b45309; border-bottom: 1px dashed #fcd34d; padding-bottom: 10px; margin-top: 0; }
+        ul { margin: 0; padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: #b91c1c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>온디바이스 AI 스마트 보청기 펌웨어 설계 명세서</h1>
+            <p>작성자: 펌웨어 엔지니어 정효원 | 타겟 플랫폼: ESP32-S3 (FreeRTOS)</p>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ 1. 코어 아키텍처 및 통신 스펙</h2>
+            <p>ESP32-S3의 듀얼 코어를 활용하여 엣지 디바이스의 병목(버퍼링)을 방지하고 초저지연 통신을 달성합니다.</p>
+            <table>
+                <tr>
+                    <th>멀티태스킹 (FreeRTOS)</th>
+                    <td>
+                        <ul>
+                            <li><strong>Core 0 (통신 전담):</strong> Wi-Fi 연결 유지, UDP 패킷 송신(오디오/이미지) 및 수신(가공된 오디오/제어 명령).</li>
+                            <li><strong>Core 1 (하드웨어 제어):</strong> I2S 마이크 수음, I2S 스피커 출력, 카메라 캡처, PTT 버튼 인터럽트 감지.</li>
+                            <li><strong>코어 간 통신:</strong> FreeRTOS의 <code>xQueue</code>를 사용하여 Core 1에서 수집한 버퍼를 Core 0으로 안전하게 전달.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>통신 프로토콜</th>
+                    <td>
+                        <ul>
+                            <li><strong>네트워크:</strong> Wi-Fi Direct 또는 스마트폰 모바일 핫스팟 연동 (로컬 IP 통신).</li>
+                            <li><strong>전송 규격:</strong> TCP가 아닌 <strong>UDP (User Datagram Protocol)</strong> 사용. 패킷 손실을 일부 감수하더라도 오디오 지연(Latency)을 최소화하기 위함.</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>📥 2. 센서 입력 및 전송 스펙 (Input)</h2>
+            <p>보청기로서의 기능을 위해 오디오는 실시간으로, 이미지는 배터리 효율을 위해 주기를 조절하여 전송합니다.</p>
+            <table>
+                <tr>
+                    <th>청각 데이터<br>(I2S 마이크)</th>
+                    <td>
+                        <strong>방식: 실시간 연속 스트리밍 (Continuous Chunk Streaming)</strong><br>
+                        <ul>
+                            <li><code>.wav</code> 파일로 녹음해서 모았다가 보내는 방식은 <strong>절대 불가</strong> (보청기 사용 시 1초 이상의 지연이 발생하면 심한 어지러움을 유발함).</li>
+                            <li><strong>스펙:</strong> 16kHz, 16-bit, Mono 설정으로 수음.</li>
+                            <li><strong>전송 주기:</strong> 약 <strong>20ms ~ 50ms 단위의 짧은 Chunk(조각) 버퍼</strong>로 쪼개어 발생 즉시 UDP로 쉼 없이 스마트폰 앱에 전송.</li>
+                            <li>앱에서는 이 실시간 스트림을 받아 1) 즉시 이퀄라이저를 먹여 이어폰으로 돌려보내고, 2) 내부에 1초~5초 분량씩 쌓아서(버퍼링) AI 모델의 분석 용도로 활용함.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>시각 데이터<br>(OV2640 카메라)</th>
+                    <td>
+                        <strong>방식: 동적 주기 캡처 (Dynamic Polling & Event Trigger)</strong><br>
+                        <ul>
+                            <li>비디오 스트리밍 방식은 ESP32의 발열과 배터리 소모를 극대화하므로 지양. 해상도는 AI 모델 규격에 맞춰 <strong>240x240 (또는 QVGA)</strong>로 설정.</li>
+                            <li><strong>주기적 캡처 (기본 상태):</strong> <strong>10초에 1장씩</strong> 캡처하여 UDP 전송. (AI가 현재 상황이 실내인지 실외인지 백그라운드에서 파악하기 위함)</li>
+                            <li><strong>즉시 캡처 (이벤트 발생 시):</strong> PTT 버튼이 눌렸거나, 앱 단의 오디오 AI가 '위험 소리(경적 등)'를 감지하여 시각적 확인이 필요할 때 <strong>인터럽트를 발생시켜 즉시 1장을 찍어 전송</strong>.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>제어 입력<br>(PTT 버튼)</th>
+                    <td>
+                        <strong>방식: 인터럽트 기반 상태 전송</strong><br>
+                        <ul>
+                            <li>버튼 누름(FALLING) 시 <code>[BTN_PRESSED]</code> 신호를 앱으로 즉시 전송하여 앱 단의 NLP 음성 인식(STT) 기능 활성화.</li>
+                            <li>버튼 뗌(RISING) 시 <code>[BTN_RELEASED]</code> 신호 전송하여 음성 인식 종료 및 의도 파악 시작.</li>
+                            <li>하드웨어 또는 소프트웨어 디바운싱(Debouncing, 약 50ms) 처리 필수.</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+            <div class="reason-box">
+                <strong>💡 설계 요약:</strong> 오디오는 보청기의 본질인 '실시간성'을 위해 끊김 없이 잘게 쪼개어 스트리밍(물 흐르듯 전송)하고, 카메라는 발열과 배터리를 고려해 '10초마다 1장'을 기본으로 하되 이벤트가 발생했을 때만 즉각 개입하는 하이브리드 전송 방식을 채택했습니다.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📤 3. 출력 제어 스펙 (Output)</h2>
+            <table>
+                <tr>
+                    <th>오디오 출력<br>(MAX98357A)</th>
+                    <td>
+                        <ul>
+                            <li>스마트폰 앱에서 가공(노이즈 캔슬링, 특정 주파수 증폭 등)이 완료되어 UDP로 수신된 오디오 Chunk를 I2S 버퍼에 넣어 즉시 이어폰으로 출력.</li>
+                            <li><strong>목표 지연율(Round-trip Latency):</strong> 수음부터 출력까지 총 <strong>100ms 이내</strong> 달성 목표.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>디스플레이 알림<br>(OLED)</th>
+                    <td>
+                        <ul>
+                            <li>스마트폰 앱(AI)에서 전달하는 텍스트 제어 신호 수신.</li>
+                            <li>예: <code>MODE=TV</code> 수신 시 TV 아이콘 표시 / <code>WARN=CAR,DIR=LEFT</code> 수신 시 왼쪽에 자동차 경고 아이콘 깜빡임 처리.</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>🔍 4. 실시간 오디오 스트리밍 3단계 검증 파이프라인</h2>
+            <p>UDP를 통해 헤더 없이 조각나서 전송되는 Raw PCM 데이터가 깨끗하게 수음되고 패킷 유실 없이 전달되는지 증명하기 위한 필수 검증 과정입니다.</p>
+            <table>
+                <tr>
+                    <th>1단계: 하드웨어 검증<br>(ESP32 시리얼 플로터)</th>
+                    <td>
+                        <ul>
+                            <li><strong>방법:</strong> 네트워크 전송 전, ESP32 코드에서 I2S로 읽어 들인 16-bit 정수 데이터를 <code>Serial.println()</code>으로 출력합니다.</li>
+                            <li><strong>확인법:</strong> 아두이노 IDE의 <strong>[툴] -> [시리얼 플로터]</strong>를 실행하여 조용할 때는 0 부근의 얕은 파형이 그려지다 마이크에 소리를 내면 파형이 상하로 크게 요동치는지 시각적으로 확인합니다.</li>
+                            <li><strong>의미:</strong> 파형이 나타나지 않거나 치우쳐 있다면 핀 연결 및 I2S 설정 오류를 의미하며, 정상적으로 요동친다면 하드웨어적 수음이 완벽함을 뜻합니다.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>2단계: 송신 로직 검증<br>(PC 파이썬 수신/녹음)</th>
+                    <td>
+                        <ul>
+                            <li><strong>방법:</strong> 노트북에서 테스트용 파이썬 스크립트를 실행해 50ms 단위로 들어오는 UDP 패킷을 모은 뒤, <code>.wav</code> 오디오 파일로 병합하여 로컬에 저장합니다.</li>
+                            <li><strong>확인법:</strong> 생성된 오디오 파일을 직접 귀로 들어봅니다.</li>
+                            <li><strong>의미:</strong> 소리가 깔끔하다면 UDP 송신 로직이 완벽함을 뜻합니다. 틱틱거리는 팝핑 노이즈는 <strong>패킷 유실(Drop)</strong>, 소리 속도가 비정상적이라면 <strong>샘플링 레이트(16kHz) 설정 불일치</strong>를 의미합니다.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>3단계: 네트워크 안정성 검증<br>(패킷 시퀀스 체킹)</th>
+                    <td>
+                        <ul>
+                            <li><strong>방법:</strong> ESP32가 오디오 데이터를 보낼 때 버퍼의 맨 앞 4바이트에 '시퀀스 번호(1, 2, 3...)'를 순차적으로 붙여서 전송합니다.</li>
+                            <li><strong>확인법:</strong> 수신부(파이썬 또는 테스트 앱)에서 수신되는 패킷의 번호가 건너뛰는지(예: 15 → 16 → 18) 콘솔 로그로 모니터링합니다.</li>
+                            <li><strong>의미:</strong> 번호가 누락되었다면 해당 패킷이 공중에서 증발(Drop)했음을 명확히 수치로 보여주며, 이를 근거로 Wi-Fi 환경 점검이나 전송 버퍼 크기(Chunk Size)를 튜닝합니다.</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card milestone-box">
+            <h3>🎯 [Phase 1] 2주 뒤 미팅까지의 구현 목표</h3>
+            <p>하드웨어 부품(버튼, 용접 등)이 구비되지 않은 제약을 고려하여, <strong>브레드보드 환경에서 ESP32가 수집한 데이터를 모바일 앱 단에 실시간으로 렌더링하는 통합 PoC 구현</strong>에 집중합니다.</p>
+            
+            <ol>
+                <li><strong>환경 세팅 및 기본 작동 확인 (Week 1)</strong>
+                    <ul>
+                        <li>ESP32-S3와 INMP441(마이크), OV2640(카메라)를 브레드보드에 점퍼선으로 연결.</li>
+                        <li>카메라 초기화 성공 로그 및 마이크의 I2S 신호가 시리얼 모니터에 정상적으로 찍히는지 확인.</li>
+                    </ul>
+                </li>
+                <li><strong>PC 환경 1차 통신 검증 (Week 1)</strong>
+                    <ul>
+                        <li>스마트폰 핫스팟을 통해 ESP32-S3를 Wi-Fi 네트워크에 연결.</li>
+                        <li>본격적인 앱 연동 전, <strong>노트북 파이썬 스크립트를 활용해 UDP 패킷(더미 텍스트, 센서 데이터) 송수신이 원활한지 1차 검증</strong>.</li>
+                    </ul>
+                </li>
+                <li><strong>테스트 앱 연동 및 데이터 시연 (Week 2) - 가장 중요!</strong>
+                    <ul>
+                        <li><strong>통신 검증을 위해 데이터를 수신하고 띄워주는 간단한 테스트용 모바일 앱(Flutter/Android)을 직접 제작하여 펌웨어와 연동.</strong></li>
+                        <li><strong>오디오:</strong> 50ms마다 전송되는 I2S 마이크 버퍼를 스마트폰 앱이 수신하여, <strong>앱 화면에 오디오 파형이나 수신 로그가 정상적으로 출력</strong>되는지 확인.</li>
+                        <li><strong>이미지:</strong> <code>millis()</code> 타이머를 사용하여 10초에 한 번씩 캡처된 카메라 프레임이 <strong>스마트폰 앱 화면의 이미지 뷰어에 실시간으로 렌더링</strong>되는지 최종 확인.</li>
+                        <li>(노트북 터미널이 아닌, <strong>실제 스마트폰 앱 화면에서 센서 데이터들이 정상 수신되고 있음을 교수님께 시연할 것.</strong>)</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
