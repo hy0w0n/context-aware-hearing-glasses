@@ -26,11 +26,12 @@ static QueueHandle_t s_rawQ = nullptr;     // DSP → WiFi raw 스트림 (PC 도
 
 static void printHelp() {
 #if defined(TRANSPORT_WIFI)
-  Log.println("명령: help | wifi <ssid>;<pass> | forget | info | dump | beam | raw | adpcm | pcm | doaoff <n>");
+  Log.println("명령: help | wifi <ssid>;<pass> | forget | info | dump | beam | raw | adpcm | pcm");
+  Log.println("      img vga|qvga | imgq <10-40> | doaoff <n>");
   Log.println("  예) wifi MyHotspot;mypassword   (2.4GHz만 지원!)");
-  Log.println("  beam=빔포밍 16k 스트림, raw=3ch 48k 원본(PC 도구용) | adpcm=4:1 압축, pcm=무압축");
+  Log.println("  beam=빔포밍 16k, raw=3ch 48k | adpcm/pcm=압축 | img/imgq=이미지 속도 A/B(§7.5)");
 #else
-  Log.println("명령: help | info | dump | adpcm | pcm | doaoff <n>   (BLE 빌드 — WiFi 명령 없음)");
+  Log.println("명령: help | info | dump | adpcm | pcm | img vga|qvga | imgq <10-40> | doaoff <n>");
 #endif
 }
 
@@ -58,6 +59,16 @@ static void handleLine(String line) {
     audio_capture_dump(64);
   } else if (line == "cam") {
     camera_test_capture();  // M3 스모크: init(최초 1회) + 1프레임 캡처
+  } else if (line == "img vga") {
+    camera_set_qvga(false);   // 속도 A/B (proto.md §7.5) — NVS 유지
+  } else if (line == "img qvga") {
+    camera_set_qvga(true);
+  } else if (line == "img gray") {
+    camera_set_gray(true);    // 모노크롬 전송 (모델이 흑백 학습 — 추가 절감)
+  } else if (line == "img color") {
+    camera_set_gray(false);
+  } else if (line.startsWith("imgq ")) {
+    camera_set_quality(line.substring(5).toInt());  // OV2640 스케일 10~40 (기본 12, 속도용 18)
   } else if (line.startsWith("doaoff ")) {
     dsp_pipeline_setBusOffset(line.substring(7).toInt());  // 부팅 후 sync_check 실측값 입력
   } else if (line == "adpcm") {
