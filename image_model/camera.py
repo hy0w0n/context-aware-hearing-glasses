@@ -45,10 +45,14 @@ while cap.isOpened():
     h, w, _ = frame.shape
 
     # 3. 이미지 전처리 (모델 입력 규격 동기화)
-    # 224x224 크기 조정 및 BGR에서 RGB 채널 전환
+    # 224x224 크기 조정 후 흑백화 → 3채널 복제
+    # [수정 2026-10-01] 모델이 "컬러 수집 → 흑백 변환" 데이터로 학습됨(다현 확인).
+    # 기존 컬러(RGB) 입력은 학습 분포와 불일치 → 흑백(BT.601 휘도) 3채널로 교체.
+    # 원본 컬러 버전은 camera_color_backup.py 보관.
     input_img = cv2.resize(frame, (224, 224))
-    input_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2RGB)
-    
+    gray = cv2.cvtColor(input_img, cv2.COLOR_BGR2GRAY)
+    input_img = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
+
     # [핵심 수정 완료]
     # 모델 학습 시(Colab) preprocess_input 레이어를 네트워크 내부에 이미 포함시켰으므로,
     # 외부에서 (input_img / 127.5) - 1.0 수식을 적용하면 이중 전처리가 되어 영상이 암흑 파손됩니다.
