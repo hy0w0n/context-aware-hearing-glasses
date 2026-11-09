@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private Intent speechRecognizerIntent;
     private OkHttpClient client;
 
-    // 💡 1. API_KEY 확인 (본인 키가 맞는지 확인!)
-    private static final String API_KEY = "<REMOVED>";
+    // 💡 1. API_KEY는 저장소 루트 .env의 LLM_API_KEY에서 읽음 (git에 올리지 않음)
+    private static final String API_KEY = BuildConfig.LLM_API_KEY;
 
     // 💡 2. 학교 API Base URL
     private static final String API_URL = "https://factchat-cloud.mindlogic.ai/v1/gateway/chat/completions";

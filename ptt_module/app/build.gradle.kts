@@ -1,10 +1,22 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
+}
+
+// 💡 LLM API 키는 저장소 루트 .env(git 제외)의 LLM_API_KEY에서 읽음
+val secrets = Properties().apply {
+    val f = rootProject.file("../.env")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
     namespace = "com.example.nlp"
     compileSdk = 34
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.example.nlp"
@@ -14,6 +26,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "LLM_API_KEY", "\"${secrets.getProperty("LLM_API_KEY", "")}\"")
     }
 
     buildTypes {
