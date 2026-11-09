@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """소리 상황 분류 모델(soundModel.tflite) 오프라인 평가 — 앱(SoundClassifier.kt)과 같은 전처리로 PCM/WAV를 분류한다.
 
-전처리(Edge Impulse SDK extract_mfe_features v4와 동일, 2026-10-03 검증):
+전처리(앱 MelFeatures.kt와 같은 계산, 2026-11-09 공개 자료 기준으로 다시 작성):
   2.0초(32,000샘플) 창 → [피크 정규화: 최대 진폭 → 32767, 학습 데이터와 동일] → 프리엠퍼시스 y[n]=x[n]−0.98·x[n−1]
-  (n=0의 이전값은 창 마지막 샘플) → ÷32768 → MFE(프레임 320/스트라이드 160, FFT 256 절단, 멜 32, noise floor −52dB) → INT8 모델
+  (n=0의 이전값은 창 마지막 샘플) → ÷32768 → MFE(프레임 320/간격 160, 앞 256샘플 FFT, 멜 32, 잡음 바닥 −52dB) → INT8 모델
 무음 게이트: 원값 RMS < 150 이면 모델을 돌리지 않고 '무음'.
 
 사용:
@@ -34,51 +34,52 @@ NFFT, NB, NF, FRAMES, STRIDE, WINDOW = 256, 129, 32, 199, 160, 32000
 NOISE_FLOOR, CONF_GATE, SILENCE_RMS, PRE_COF = -52.0, 0.6, 150.0, 0.98
 
 
-def _mel(f):
-    return 1127.0 * math.log(1.0 + f / 700.0)
+# ── MFE 특징 (앱 MelFeatures.kt와 같은 계산) ──────────────────────────────
+# 2026-11-09 다시 작성: Edge Impulse 공개 처리 블록(github.com/edgeimpulse/processing-blocks,
+# mfe/dsp.py와 그 안의 speechpy, The Clear BSD License)과 원본 speechpy(Apache-2.0)에 공개된
+# 계산 순서를 근거로 했다. Edge Impulse SDK의 C++ 코드는 쓰지 않는다.
+FRAME_LEN = 320
 
 
-def _imel(m):
-    return 700.0 * (math.exp(m / 1127.0) - 1.0)
+def _filterbank():
+    """멜 필터 [NF, NB] — speechpy filterbanks()의 정의"""
+    mel = lambda hz: 1127.0 * np.log(1.0 + hz / 700.0)
+    hz = 700.0 * (np.exp(np.linspace(mel(0.0), mel(8000.0), NF + 2) / 1127.0) - 1.0)
+    hz[-1] -= 0.001                                   # 공개 처리 블록과 같이 마지막 경계를 0.001 Hz 내림
+    edge = np.floor((NFFT + 1) * hz / 16000).astype(int)
+    k = np.arange(NB)
+    fb = np.zeros((NF, NB))
+    for f in range(NF):
+        left, mid, right = edge[f], edge[f + 1], edge[f + 2]
+        up = (k > left) & (k <= mid)
+        fb[f, up] = (k[up] - left) / (mid - left)
+        down = (k >= mid) & (k < right)
+        fb[f, down] = (right - k[down]) / (right - mid)
+    return fb
 
 
-_lo, _hi = _mel(0.0), _mel(8000.0)
-BINS = []
-for _i in range(NF + 2):
-    _hz = min(max(_imel(_lo + (_hi - _lo) * _i / (NF + 1)), 0.0), 8000.0)
-    if _i == NF + 1:
-        _hz -= 0.001
-    BINS.append(int(math.floor((NFFT + 1) * _hz / 16000)))
+FILTERBANK = _filterbank()
+_FRAME_IDX = np.arange(FRAMES)[:, None] * STRIDE + np.arange(NFFT)[None, :]   # 프레임마다 앞 256샘플
 
 
 def preprocess(x_i16, peak_norm=True):
+    """int16 창 → 최대 크기 맞춤 → 프리엠퍼시스(n=0은 마지막 샘플) → ÷32768"""
     x = x_i16.astype(np.float64)
     peak = float(np.abs(x).max())
-    scale = ((32767.0 / peak) if (peak_norm and peak > 0) else 1.0) / 32768.0
-    prev = np.concatenate(([x[-1]], x[:-1]))
-    return (x - PRE_COF * prev) * scale
+    gain = ((32767.0 / peak) if (peak_norm and peak > 0) else 1.0) / 32768.0
+    return (x - PRE_COF * np.roll(x, 1)) * gain
 
 
 def mfe(xf):
-    feats = np.zeros(FRAMES * NF, np.float32)
-    for fr in range(FRAMES):
-        seg = xf[fr * STRIDE: fr * STRIDE + NFFT]
-        X = np.fft.fft(seg, NFFT)
-        p = (X.real ** 2 + X.imag ** 2)[:NB] / NFFT
-        for i in range(NF):
-            l, m, r = BINS[i], BINS[i + 1], BINS[i + 2]
-            acc = p[m]
-            for b in range(l + 1, r):
-                if b < m:
-                    acc += (b - l) / (m - l) * p[b]
-                elif b > m:
-                    acc += (r - b) / (r - m) * p[b]
-            if acc == 0:
-                acc = 1e-10
-            f = (10.0 * math.log10(max(acc, 1e-30)) - NOISE_FLOOR) / (-NOISE_FLOOR + 12.0)
-            f = round(f * 256.0) / 256.0
-            feats[fr * NF + i] = min(max(f, 0.0), 1.0)
-    return feats
+    """2.0초 신호 → 특징 199×32 (프레임 순, 0~255/256)"""
+    frames = np.asarray(xf, np.float64)[_FRAME_IDX]
+    power = np.abs(np.fft.rfft(frames, n=NFFT, axis=1)) ** 2 / NFFT
+    energy = power @ FILTERBANK.T
+    energy[energy == 0] = 1e-10
+    db = 10.0 * np.log10(np.maximum(energy, 1e-30))
+    v = np.clip((db - NOISE_FLOOR) / (-NOISE_FLOOR + 12.0), 0.0, 1.0)
+    q = np.clip(np.rint(v * 256.0), 0, 255)          # 255에서 멈춤(모델 입력 범위의 최댓값)
+    return (q / 256.0).astype(np.float32).reshape(-1)
 
 
 class Model:

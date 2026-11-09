@@ -10,7 +10,9 @@
 | 특징 | MFE: 프레임 20 ms · 간격 10 ms · FFT 256 · 멜 필터 32개 · 잡음 바닥 −52 dB → 199프레임 × 32 = 6,368개 |
 | 앱의 전처리 | 프리엠퍼시스(0.98) → ÷32768 → 2초 창마다 최대 크기 맞춤. 소리가 작으면(RMS 150 미만) 모델을 돌리지 않고 무음으로 판정 |
 
-정확도와 측정 조건은 [README의 측정 결과](../README.md#ai-모델)에 있습니다. 앱 쪽 구현은 `android/.../SoundClassifier.kt`, PC 평가는 `tools/sound_eval.py`에 있습니다.
+정확도와 측정 조건은 [README의 측정 결과](../README.md#ai-모델)에 있습니다. 앱 쪽 구현은 `android/.../SoundClassifier.kt`(분류)와 `MelFeatures.kt`(특징 계산), PC 평가는 `tools/sound_eval.py`에 있습니다.
+
+특징 계산은 Edge Impulse가 공개한 처리 블록([processing-blocks](https://github.com/edgeimpulse/processing-blocks), The Clear BSD License)과 speechpy(Apache-2.0)의 계산 순서를 근거로 직접 작성했습니다(2026-11-09). 이전 구현과 비교해 2초 창 542개에서 모델 출력이 모두 같았습니다.
 
 ## Edge Impulse 생성 파일을 넣지 않은 이유
 
