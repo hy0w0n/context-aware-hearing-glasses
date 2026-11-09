@@ -42,8 +42,12 @@ __pycache__/
 .DS_Store
 
 # ── 4. 포함 폴더 안의 비공개·대용량 항목 ────────────────────
-# Edge Impulse SDK 전체본은 archive/2026-09-sound-model-v5 태그의 zip에 있음
+# Edge Impulse 내보내기의 SDK·생성 파일: 무료 플랜 약관상 공개 배포 불가 → 로컬(팀 내부)에만 둠
 sound_model/edge-impulse-sdk/
+sound_model/model-parameters/
+sound_model/tflite-model/*.cpp
+sound_model/tflite-model/*.h
+sound_model/README.txt
 # 얼굴이 찍힌 시험 사진 (앱은 파일이 없으면 '시험 실패' 로그만 남김)
 android/app/src/main/assets/test_img*.jpg
 # 공모전 준비 자료·시안

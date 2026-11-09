@@ -271,7 +271,7 @@ flowchart LR
 | `android/` | 통합 안드로이드 앱: 수신, 소리·이미지 분류, 모드 결정, 음성 명령 |
 | `ptt_module/` | 음성 명령 인텐트 분류 단독 모듈 (앱에 옮기기 전 원본) |
 | `image_model/` | 이미지 분류 모델(`imageModel.tflite`)과 PC 카메라 데모 |
-| `sound_model/` | Edge Impulse 소리 분류 모델 파라미터와 TFLite 모델 |
+| `sound_model/` | Edge Impulse로 학습한 소리 분류 모델(TFLite)과 규격 설명 |
 | `tools/` | PC 도구: 수신기, 방향 추정·빔포밍 프로토타입, 동기 검증, 평가 스크립트 |
 | `docs/` | 기능별 문서(`docs/features/`), 요구분석명세서, 배선 가이드, 시험 문서, 모델 의사결정 기록 |
 | `cmd_list.md` | 빌드·시리얼 명령·PC 도구 사용법 모음 |
@@ -355,9 +355,9 @@ python tools/doa_prototype.py   # 3채널 WAV로 방향 추정 검증
 | `archive/2026-06-firmware-max4466-recording` | feature/Firmware | MAX4466 아날로그 마이크 녹음 프로토타입 |
 | `archive/2026-06-firmware-3mic-oled` | feature/firmPractice | 아날로그 마이크 3개 방향 추정 + OLED |
 | `archive/2026-06-sound-learning-app` | feature/SoundLearningTest | 소리 학습 테스트 앱 |
-| `archive/2026-07-sound-edge-impulse-app` | SmartHearing_Edge | Edge Impulse SDK 소리 분류 앱 |
+| `archive/2026-07-sound-edge-impulse-app` | SmartHearing_Edge | Edge Impulse SDK 소리 분류 앱 (약관상 공개 배포할 수 없는 생성 파일·APK 제외) |
 | `archive/2026-08-image-camera-mobilenet` | feature/camera | MobileNetV2 이미지 모델 + 카메라 데모 |
-| `archive/2026-09-sound-model-v5` | AIModel | Edge Impulse 소리 모델 배포본 v5 (SDK 포함 zip) |
+| `archive/2026-09-sound-model-v5` | AIModel | Edge Impulse 소리 모델 배포본 v5 (약관상 공개 배포할 수 없는 생성 파일을 뺀 zip) |
 
 ```bash
 git fetch --tags
@@ -370,10 +370,11 @@ git checkout archive/2026-06-firmware-3mic-oled
 
 이 저장소의 코드와 문서는 [MIT 라이선스](LICENSE)를 따릅니다. 저작권 표시만 남기면 자유롭게 쓰고 고칠 수 있습니다.
 
+소리 분류 모델(`.tflite`)은 Edge Impulse 약관상 만든 사람의 결과물(Output)이라 MIT에 포함합니다. Edge Impulse가 함께 생성하는 C++ 라이브러리 파일은 약관상 공개 배포할 수 없어 저장소에 넣지 않았습니다([자세히](sound_model/README.md)).
+
 아래는 제외하며, 각자의 라이선스를 따릅니다.
 
 | 대상 | 라이선스 |
 |---|---|
-| `sound_model/`, `android/app/src/main/assets/soundModel.tflite` (Edge Impulse가 생성한 소리 모델 파일) | [Edge Impulse 이용약관](https://edgeimpulse.com/legal/terms-of-service) |
 | `ptt_module/gradlew`, `ptt_module/gradlew.bat`, `ptt_module/gradle/wrapper/` | Gradle (Apache-2.0) |
 | 빌드할 때 내려받는 외부 라이브러리 (Arduino-ESP32, NimBLE-Arduino, U8g2, LiteRT, OkHttp 등) | 각 라이브러리의 라이선스 |

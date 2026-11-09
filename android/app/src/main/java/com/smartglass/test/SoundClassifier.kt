@@ -19,9 +19,9 @@ import kotlin.math.sqrt
  *
  * 모델: INT8 양자화 TFLite, 입력 = MFE 특징 6368개(199프레임×32필터), 출력 = 3클래스 [danger, noise, speech]
  * 오디오 입력: 16kHz mono 2.0초(32,000샘플) — 우리 빔포밍 스트림과 샘플레이트 일치.
- *   ⚠ EI 관례: 샘플을 int16 원값 그대로 float로 사용 (÷32768 정규화 금지 — dB 스케일이 어긋남)
+ *   전처리: 프리엠퍼시스(0.98) → ÷32768 → 창 피크 정규화 (classifyBuffer 참고, 2026-10-03 수정)
  *
- * MFE v4 전처리 — sound_model/edge-impulse-sdk 소스(feature.hpp/processing.hpp/numpy.hpp)에서 그대로 포팅:
+ * MFE v4 전처리 — Edge Impulse SDK의 MFE 계산(feature.hpp/processing.hpp/numpy.hpp)을 Kotlin으로 옮김:
  *   프레임 320샘플/스트라이드 160 → 각 프레임 앞 256샘플만 FFT(256) → 파워 |X|²/256 (129빈)
  *   멜 필터 32개: mel=1127·ln(1+f/700), 빈 = floor(257·hz/16000), 삼각 가중(middle=1.0, 양끝 제외)
  *   0→1e-10 → 10·log10 → (dB+52)/64 → round(×256)/256 → [0,1] 클립 (noise_floor=-52dB)

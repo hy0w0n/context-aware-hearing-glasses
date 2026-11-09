@@ -113,7 +113,7 @@
 | 경로 | 내용 |
 |---|---|
 | [`image_model/`](../../image_model/) | 이미지 분류 모델(`imageModel.tflite`)과 PC 시연 코드(`camera.py`, 흑백 입력. 원래 컬러판은 `camera_color_backup.py`) |
-| [`sound_model/`](../../sound_model/) | 소리 분류 모델(Edge Impulse 배포본 v5). SDK 전체는 용량 때문에 빼고, 원본 zip은 [`archive/2026-09-sound-model-v5`](https://github.com/hy0w0n/context-aware-hearing-glasses/tree/archive/2026-09-sound-model-v5)에 있습니다 |
+| [`sound_model/`](../../sound_model/) | 소리 분류 모델(Edge Impulse로 학습, v5)과 규격 설명. Edge Impulse가 생성한 C++ 라이브러리 파일은 약관상 공개 배포할 수 없어 넣지 않았습니다 |
 | [`android/…/ImageClassifier.kt`](../../android/app/src/main/java/com/smartglass/test/ImageClassifier.kt) | 이미지 분류, 후처리(negative 규칙, 3장 다수결) |
 | [`android/…/SoundClassifier.kt`](../../android/app/src/main/java/com/smartglass/test/SoundClassifier.kt) | MFE 특징 추출 포팅, 2초 창 소리 분류, 무음 판정 |
 | [`android/…/ModeController.kt`](../../android/app/src/main/java/com/smartglass/test/ModeController.kt) | 모드 결정(우선순위, 이미지×소리 표, 일대일/다인 구분) |

@@ -273,7 +273,7 @@ flowchart LR
 | `android/` | 統合Androidアプリ：受信、音・画像の分類、モード決定、音声コマンド |
 | `ptt_module/` | 音声コマンドのインテント分類の単体モジュール（アプリに移す前のオリジナル） |
 | `image_model/` | 画像分類モデル（`imageModel.tflite`）とPCカメラのデモ |
-| `sound_model/` | Edge Impulse音分類モデルのパラメータとTFLiteモデル |
+| `sound_model/` | Edge Impulseで学習した音分類モデル（TFLite）と仕様の説明 |
 | `tools/` | PCツール：受信ツール、方向推定・ビームフォーミングのプロトタイプ、同期検証、評価スクリプト |
 | `docs/` | 機能別の文書（`docs/features/`、韓国語）、要求分析仕様書、配線ガイド、試験文書、モデルの意思決定記録 |
 | `cmd_list.md` | ビルド・シリアルコマンド・PCツールの使い方のまとめ |
@@ -357,9 +357,9 @@ python tools/doa_prototype.py   # 3チャンネルWAVで方向推定を検証
 | `archive/2026-06-firmware-max4466-recording` | feature/Firmware | MAX4466アナログマイクの録音プロトタイプ |
 | `archive/2026-06-firmware-3mic-oled` | feature/firmPractice | アナログマイク3個による方向推定 + OLED |
 | `archive/2026-06-sound-learning-app` | feature/SoundLearningTest | 音の学習テスト用アプリ |
-| `archive/2026-07-sound-edge-impulse-app` | SmartHearing_Edge | Edge Impulse SDKを使った音分類アプリ |
+| `archive/2026-07-sound-edge-impulse-app` | SmartHearing_Edge | Edge Impulse SDKを使った音分類アプリ（規約上公開配布できない生成ファイル・APKを除く） |
 | `archive/2026-08-image-camera-mobilenet` | feature/camera | MobileNetV2画像モデル + カメラのデモ |
-| `archive/2026-09-sound-model-v5` | AIModel | Edge Impulse音モデルの配布版 v5（SDKを含むzip） |
+| `archive/2026-09-sound-model-v5` | AIModel | Edge Impulse音モデルの配布版 v5（規約上公開配布できない生成ファイルを除いたzip） |
 
 ```bash
 git fetch --tags
@@ -372,10 +372,11 @@ git checkout archive/2026-06-firmware-3mic-oled
 
 このリポジトリのコードと文書は[MITライセンス](LICENSE)に従います。著作権表示を残せば、自由に使用・改変できます。
 
+音分類モデル（`.tflite`）は、Edge Impulseの規約上、作成者の成果物（Output）にあたるためMITに含めます。Edge Impulseが同時に生成するC++ライブラリのファイルは、規約上公開して配布できないため、リポジトリに入れていません（[詳細・韓国語](sound_model/README.md)）。
+
 次のものは対象外で、それぞれのライセンスに従います。
 
 | 対象 | ライセンス |
 |---|---|
-| `sound_model/`、`android/app/src/main/assets/soundModel.tflite`（Edge Impulseが生成した音モデルのファイル） | [Edge Impulse 利用規約](https://edgeimpulse.com/legal/terms-of-service) |
 | `ptt_module/gradlew`、`ptt_module/gradlew.bat`、`ptt_module/gradle/wrapper/` | Gradle（Apache-2.0） |
 | ビルド時にダウンロードする外部ライブラリ（Arduino-ESP32、NimBLE-Arduino、U8g2、LiteRT、OkHttpなど） | 各ライブラリのライセンス |
