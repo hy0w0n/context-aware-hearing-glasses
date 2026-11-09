@@ -60,6 +60,8 @@ python D:\capstone\tools\serial_cmd.py COM3 "info" 5
 | `forget` | 저장된 WiFi 삭제 |
 | `beam` / `raw` | (wifi 빌드) 오디오 스트림 전환 — **NVS 저장이라 재부팅/재플래시에도 유지**. `beam`=빔포밍 16kHz mono(+DOA 메타, 청취/앱용), `raw`=3ch 48kHz 원본(기본 아님! 분석 도구 sync_check/doa_prototype용) — 2026-09-10 |
 | `adpcm` / `pcm` | 16k 스트림 압축 전환 — **NVS 유지**. `adpcm`=IMA 4:1(64kbps, BLE 대역 절약·비교실험용), `pcm`=무압축 256kbps(기본). raw 3ch 스트림엔 미적용. PC 도구·앱 모두 자동 인식(fmt 바이트) — 2026-09-10 |
+| `img vga` / `img qvga` | 이미지 해상도 전환(NVS 유지) — **속도 A/B(§7.5)**: QVGA=1/2~1/3 용량, 모델 224 입력이라 무손실. 권장 조합 `img qvga`+`imgq 18` (혼잡 환경 0.97→0.32초/장) — 2026-10-01 |
+| `imgq <10-40>` | JPEG 품질(OV2640 스케일, 낮을수록 고화질·큼). 기본 12, 속도용 18 |
 | `doaoff <n>` | DOA 버스 오프셋 설정 (부팅마다 0 또는 ±1로 바뀜! 재부팅 후 클랩 1회 녹음(raw) → sync_check.py의 ch1-ch3 값 입력. 기본 0, ±1 오차는 각도 3~6° 수준) |
 
 - 로그/명령은 COM3·COM5 **어느 포트에서도 동작** (듀얼 콘솔)

@@ -41,6 +41,8 @@ class SoundClassifier(ctx: Context) {
         private const val NOISE_FLOOR = -52.0f
         const val SILENCE_RMS = 150.0     // 이 미만이면 '무음' 판정(모델 스킵) — §7.4 무음 열 복원
         const val CONF_GATE = 0.6f        // EI 기본 임계 (model_metadata EI_CLASSIFIER_THRESHOLD)
+        private const val PEAK_TARGET = 32767.0f  // 학습 클립의 피크(최대 진폭 1.0)에 맞추는 목표값
+        private const val PRE_COF = 0.98f         // EI SDK preemphasis 계수 (ei_run_dsp.h)
     }
 
     data class Result(val cls: String?, val scores: FloatArray, val rms: Double, val ms: Long) {
@@ -122,8 +124,23 @@ class SoundClassifier(ctx: Context) {
         if (rms < SILENCE_RMS) {
             return Result(null, FloatArray(3), rms, android.os.SystemClock.elapsedRealtime() - t0)
         }
+        // EI SDK(ei_run_dsp.h extract_mfe_features, MFE v3+)는 MFE 앞에 preemphasis(shift=1, cof=0.98, rescale=true)를 둔다:
+        //   y[n] = x[n] − 0.98·x[n−1]  (n=0의 이전값은 신호 끝 샘플)  →  ÷32768 로 [-1,1] 스케일.
+        // 이 두 단계 없이 int16 원값을 넣으면 특징이 전부 1.0으로 포화되어 출력이 입력과 무관해진다(2026-10-03 확인).
+        // 학습 데이터는 2.0초 클립별 피크 정규화(librosa, 최대 진폭 1.0 = 32767)였으므로 창 피크도 같은 기준으로 맞춘다.
+        // 무음 판정은 원값 RMS로 먼저 끝냈으므로 정적을 증폭하는 일은 없다.
+        var peak = 0
+        for (s in window) { val a = if (s < 0) -s.toInt() else s.toInt(); if (a > peak) peak = a }
+        val scale = (if (peak > 0) PEAK_TARGET / peak else 1.0f) / 32768.0f
+        val x = FloatArray(window.size)
+        var prev = window[window.size - 1].toFloat()
+        for (i in window.indices) {
+            val now = window[i].toFloat()
+            x[i] = (now - PRE_COF * prev) * scale
+            prev = now
+        }
 
-        val features = mfe(window)                       // 199×32, [0,1]
+        val features = mfe(x)                            // 199×32, [0,1]
         val input = ByteBuffer.allocateDirect(features.size).order(ByteOrder.nativeOrder())
         for (f in features) {
             val q = round(f / inScale + inZp).toInt().coerceIn(-128, 127)
@@ -149,7 +166,7 @@ class SoundClassifier(ctx: Context) {
     }
 
     // ── MFE v4 (Edge Impulse SDK 충실 포팅) ────────────────────────────
-    private fun mfe(window: ShortArray): FloatArray {
+    private fun mfe(window: FloatArray): FloatArray {
         val features = FloatArray(FRAMES * NUM_FILTERS)
         val re = FloatArray(NFFT)
         val im = FloatArray(NFFT)
@@ -159,7 +176,7 @@ class SoundClassifier(ctx: Context) {
             val off = frame * FRAME_STRIDE
             // rfft는 프레임(320)을 fft 길이(256)로 절단 — numpy.hpp rfft "truncate if needed" 계승
             for (i in 0 until NFFT) {
-                re[i] = window[off + i].toFloat()   // int16 원값 그대로 (EI 오디오 관례)
+                re[i] = window[off + i]             // 프리엠퍼시스·÷32768·피크 정규화가 끝난 float 신호
                 im[i] = 0f
             }
             fft(re, im)

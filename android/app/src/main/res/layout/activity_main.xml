@@ -213,8 +213,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="🔊 소리모델 자가시험"
-                android:textSize="12sp" />
+                android:text="🔊 소리 자가시험"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/btnImgAb"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🖼 컬러vs흑백"
+                android:textSize="11sp" />
         </LinearLayout>
 
         <TextView

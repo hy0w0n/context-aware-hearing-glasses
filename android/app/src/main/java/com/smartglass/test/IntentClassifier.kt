@@ -30,8 +30,8 @@ class IntentClassifier(
     private val onAutoMode: (Boolean) -> Unit             // AUTO_MODE_ON/OFF → 앱 상태 (3단계에서 소비)
 ) {
     companion object {
-        // ⚠ 학교 LLM 게이트웨이 (ptt_module 원본 그대로 — 키 관리는 팀 공유 저장소 업로드 전 주의)
-        private const val API_KEY = "<REMOVED>"
+        // 학교 LLM 게이트웨이 — 키는 저장소 루트 .env의 LLM_API_KEY (git 제외) → BuildConfig
+        private val API_KEY = BuildConfig.LLM_API_KEY
         private const val API_URL = "https://factchat-cloud.mindlogic.ai/v1/gateway/chat/completions"
         // 채원 프롬프트 원본 유지 (인텐트 10종 — Q12 모드 슬롯 해소의 핵심)
         private const val SYSTEM_PROMPT =

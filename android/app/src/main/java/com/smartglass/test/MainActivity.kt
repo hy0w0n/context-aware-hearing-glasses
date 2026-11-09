@@ -102,6 +102,27 @@ class MainActivity : AppCompatActivity(), LinkCallback {
             tvSound.text = "소리: 모델 로드 실패 (${e.message})"
             null
         }
+        findViewById<Button>(R.id.btnImgAb).setOnClickListener {
+            val cls = classifier ?: return@setOnClickListener
+            clsExec.execute {   // 내장 실촬영 3장: 컬러 vs 흑백(휘도 3채널) 판정 비교 — 보드 불필요
+                for (i in 1..3) {
+                    try {
+                        val bmp = assets.open("test_img$i.jpg").use {
+                            android.graphics.BitmapFactory.decodeStream(it)
+                        } ?: continue
+                        val c = cls.classify(bmp, gray = false, smooth = false)
+                        val g = cls.classify(bmp, gray = true, smooth = false)
+                        runOnUiThread {
+                            val match = if (c.rawClass == g.rawClass) "일치" else "❌불일치"
+                            log("🖼 img$i: 컬러 ${ImageClassifier.KR[c.rawClass]}(${(c.conf * 100).toInt()}%)" +
+                                " vs 흑백 ${ImageClassifier.KR[g.rawClass]}(${(g.conf * 100).toInt()}%) [$match]")
+                        }
+                    } catch (e: Exception) {
+                        runOnUiThread { log("🖼 img$i 시험 실패: ${e.message}") }
+                    }
+                }
+            }
+        }
         findViewById<Button>(R.id.btnSoundTest).setOnClickListener {
             val snd = soundCls ?: return@setOnClickListener
             sndExec.execute {   // 내장 테스트 PCM(빔포밍 녹음 2초)으로 파이프라인 자가시험 — 보드 불필요
@@ -310,7 +331,8 @@ class MainActivity : AppCompatActivity(), LinkCallback {
         val cls = classifier ?: return
         clsExec.execute {
             try {
-                val r = cls.classify(bmp)
+                // 모델이 흑백(3채널 복제)으로 학습됨(다현 확인 2026-10-01) → 추론 입력은 항상 흑백화
+                val r = cls.classify(bmp, gray = true)
                 runOnUiThread {
                     tvClassify.text = "분류: ${ImageClassifier.KR[r.rawClass]}(${(r.conf * 100).toInt()}%)" +
                         " → 제어판정: ${ImageClassifier.KR[r.stableClass]} · ${r.ms}ms"

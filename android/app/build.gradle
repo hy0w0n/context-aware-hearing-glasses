@@ -3,9 +3,18 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+// LLM 게이트웨이 키는 저장소 루트 .env(git 제외)의 LLM_API_KEY에서 읽음 — 없으면 빈 값으로 빌드됨
+def secrets = new Properties()
+def envFile = rootProject.file('../.env')
+if (envFile.exists()) envFile.withInputStream { secrets.load(it) }
+
 android {
     namespace 'com.smartglass.test'
     compileSdk 36
+
+    buildFeatures {
+        buildConfig true
+    }
 
     defaultConfig {
         applicationId "com.smartglass.test"
@@ -13,6 +22,7 @@ android {
         targetSdk 36
         versionCode 1
         versionName "0.1"
+        buildConfigField "String", "LLM_API_KEY", "\"${secrets.getProperty('LLM_API_KEY', '')}\""
     }
     buildTypes {
         release {

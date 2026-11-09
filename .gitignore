@@ -1,0 +1,50 @@
+# ── 1. 비밀 값: 절대 커밋 금지 ─────────────────────────────
+# API 키는 저장소 루트 .env에만 둔다 (.env.example을 복사해 채움)
+.env
+.env.*
+!.env.example
+local.properties
+*.keystore
+*.jks
+
+# ── 2. 공개 대상만 포함 (루트의 나머지는 모두 제외) ─────────
+# 로컬 폴더에는 녹음·사진·공모전 자료·팀원 보고서가 함께 있으므로
+# 새 항목은 명시적으로 추가해야만 올라가게 한다.
+/*
+!/.gitignore
+!/.env.example
+!/README.md
+!/cmd_list.md
+!/firmware/
+!/tools/
+!/android/
+!/ptt_module/
+!/image_model/
+!/sound_model/
+!/docs/
+
+# ── 3. 빌드 산출물·캐시 ─────────────────────────────────────
+.pio/
+build/
+.gradle/
+.kotlin/
+.idea/
+.vscode/
+*.iml
+.cxx/
+.externalNativeBuild/
+captures/
+__pycache__/
+*.pyc
+*.exe
+.DS_Store
+
+# ── 4. 포함 폴더 안의 비공개·대용량 항목 ────────────────────
+# Edge Impulse SDK 전체본은 archive/2026-09-sound-model-v5 태그의 zip에 있음
+sound_model/edge-impulse-sdk/
+# 얼굴이 찍힌 시험 사진 (앱은 파일이 없으면 '시험 실패' 로그만 남김)
+android/app/src/main/assets/test_img*.jpg
+# 공모전 준비 자료·시안
+docs/공모전_*
+docs/설명서_*
+docs/촬영_목록.md

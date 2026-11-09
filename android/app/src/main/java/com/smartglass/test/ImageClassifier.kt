@@ -44,16 +44,25 @@ class ImageClassifier(ctx: Context) {
         interp = Interpreter(buf)
     }
 
-    /** 수신 Bitmap 1장 분류. 추론 수십 ms — UI 스레드에서 호출 금지 (executor 사용) */
-    fun classify(bmp: Bitmap): Result {
+    /** 수신 Bitmap 1장 분류. 추론 수십 ms — UI 스레드에서 호출 금지 (executor 사용)
+     *  gray=true: 흑백(휘도) 3채널 복제 입력 — 흑백 전송 가능성 A/B 검증용 (2026-10-01)
+     *  smooth=false: 다수결 상태 미갱신 (자가시험이 실스트림 제어판정을 오염하지 않게) */
+    @JvmOverloads
+    fun classify(bmp: Bitmap, gray: Boolean = false, smooth: Boolean = true): Result {
         val t0 = android.os.SystemClock.elapsedRealtime()
         val scaled = Bitmap.createScaledBitmap(bmp, SIZE, SIZE, true)
         scaled.getPixels(pixels, 0, SIZE, 0, 0, SIZE, SIZE)
         input.rewind()
         for (p in pixels) {  // ARGB int → R,G,B float 0~255 그대로
-            input.putFloat(((p shr 16) and 0xFF).toFloat())
-            input.putFloat(((p shr 8) and 0xFF).toFloat())
-            input.putFloat((p and 0xFF).toFloat())
+            val r = ((p shr 16) and 0xFF).toFloat()
+            val g = ((p shr 8) and 0xFF).toFloat()
+            val b = (p and 0xFF).toFloat()
+            if (gray) {  // ITU-R BT.601 휘도 — ColorMatrix setSaturation(0)과 동일 가중
+                val y = 0.299f * r + 0.587f * g + 0.114f * b
+                input.putFloat(y); input.putFloat(y); input.putFloat(y)
+            } else {
+                input.putFloat(r); input.putFloat(g); input.putFloat(b)
+            }
         }
         val out = Array(1) { FloatArray(CLASSES.size) }
         interp.run(input, out)
@@ -73,11 +82,13 @@ class ImageClassifier(ctx: Context) {
         val raw = CLASSES[best]
 
         // ② 다수결 스무딩 (negative 프레임은 제어 판정에서 제외)
-        recent.addLast(raw)
-        while (recent.size > SMOOTH_N) recent.removeFirst()
-        val valid = recent.filter { it != "negative" }
-        if (valid.isNotEmpty())
-            stable = valid.groupingBy { it }.eachCount().maxByOrNull { it.value }!!.key
+        if (smooth) {
+            recent.addLast(raw)
+            while (recent.size > SMOOTH_N) recent.removeFirst()
+            val valid = recent.filter { it != "negative" }
+            if (valid.isNotEmpty())
+                stable = valid.groupingBy { it }.eachCount().maxByOrNull { it.value }!!.key
+        }
 
         return Result(raw, probs[best], stable, android.os.SystemClock.elapsedRealtime() - t0)
     }
