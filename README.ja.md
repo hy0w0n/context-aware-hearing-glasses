@@ -159,6 +159,7 @@ flowchart LR
 **5月 · 最初のプロトタイプ：サーバーで分析する方式**
 - スマートフォンアプリが録音した音声をサーバー（FastAPI）に送り、サーバーがWhisper・Geminiで音声認識と状況分析を行う方式を試しました。→ `archive/2026-05-app-fastapi-whisper`、`archive/2026-05-app-fastapi-gemini`
 - Teachable Machineで画像による状況判断を試しました。→ `archive/2026-05-image-teachable-machine`
+- ESP32-S3ボードの動作と、アナログマイク（MAX4466）の入力の読み取りを初めて試したファームウェアを作りました。→ `archive/2026-05-firmware-mic-proto`
 
 **6月 · アナログマイクで方向検出の練習**
 - アナログマイク（MAX4466）で録音ファイルを保存し、3つのマイクで音の方向を左・中央・右に分けてOLEDに表示しました。→ `archive/2026-06-firmware-max4466-recording`、`archive/2026-06-firmware-3mic-oled`
@@ -191,7 +192,7 @@ flowchart LR
 - イヤホン出力用のDACを用意しました。
 - 2次審査用の発表動画と最終発表のポスターを作り、このリポジトリを整理して公開しました。
 
-<sub>7〜11月のファームウェア・アプリの作業は当時gitで管理していなかったため、このリポジトリでは2026-11-09のコミットにまとめて入っています。</sub>
+<sub>7〜11月のファームウェア・アプリの作業は当時gitで管理していませんでした。そのため、このリポジトリには残っていた2つの時点、2026-10-01のバックアップのスナップショットと2026-11-09の最終版として入っています。10月1日のコミットにはチームメンバー3人が作ったモジュール（音声コマンド・画像モデル・音モデル）が初めて入るため、3人を共同作成者として表示しました。</sub>
 
 ## 6. 現状と今後の計画
 
@@ -311,18 +312,19 @@ python tools/doa_prototype.py   # 3チャンネルWAVで方向推定を検証
 
 ## 10. 過去の作業の保管
 
-初期の実験ブランチは、整理の際に `archive/*` タグとして残しました。
+初期の実験ブランチと、GitHubに上げていなかった5月のローカルのプロトタイプを、`archive/*` タグとして残しました。
 - これらのタグの履歴はmainにマージされているため、チームメンバーのコミットもそのまま表示されます。
 - 公開前に、ハードコードされていたAPIキーを履歴から削除しました。
 
 <details>
-<summary>タグの一覧を見る（10個）</summary>
+<summary>タグの一覧を見る（11個）</summary>
 
 | タグ | 元のブランチ | 内容 |
 |---|---|---|
 | `archive/2026-04-skeleton` | feature/Awareness | 初期フォルダ構成の骨組み |
 | `archive/2026-05-app-fastapi-whisper` | feature/app | 初期アプリ + FastAPI（Whisper STT + LLMによる状況分析） |
 | `archive/2026-05-app-fastapi-gemini` | feature/app2 | アプリ + FastAPI（Gemini STT + 状況分析） |
+| `archive/2026-05-firmware-mic-proto` | （ローカルのコピー） | ESP32-S3の動作・アナログマイク入力の最初の試験 |
 | `archive/2026-05-image-teachable-machine` | feature/image_analysis | Teachable Machineによる画像の状況判断 |
 | `archive/2026-06-firmware-max4466-recording` | feature/Firmware | MAX4466アナログマイクの録音プロトタイプ |
 | `archive/2026-06-firmware-3mic-oled` | feature/firmPractice | アナログマイク3個による方向推定 + OLED |

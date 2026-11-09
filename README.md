@@ -157,6 +157,7 @@ flowchart LR
 **5월 · 첫 프로토타입: 서버에서 분석하는 방식**
 - 스마트폰 앱이 녹음한 음성을 서버(FastAPI)로 보내고, 서버가 Whisper·Gemini로 음성인식과 상황 분석을 하는 방식을 시험했습니다. → `archive/2026-05-app-fastapi-whisper`, `archive/2026-05-app-fastapi-gemini`
 - 티처블머신으로 이미지 상황 판단을 시험했습니다. → `archive/2026-05-image-teachable-machine`
+- ESP32-S3 보드 동작과 아날로그 마이크(MAX4466) 입력 읽기를 처음 시험한 펌웨어를 만들었습니다. → `archive/2026-05-firmware-mic-proto`
 
 **6월 · 아날로그 마이크로 방향 감지 연습**
 - 아날로그 마이크(MAX4466)로 녹음 파일을 저장하고, 마이크 3개로 소리 방향을 왼쪽·가운데·오른쪽으로 구분해 OLED에 띄웠습니다. → `archive/2026-06-firmware-max4466-recording`, `archive/2026-06-firmware-3mic-oled`
@@ -189,7 +190,7 @@ flowchart LR
 - 이어폰 출력용 DAC를 확보했습니다.
 - 2차 심사용 발표 영상과 최종 발표 포스터를 만들고, 이 저장소를 정리해 공개했습니다.
 
-<sub>7~11월의 펌웨어·앱 작업은 당시 git으로 관리하지 않아, 이 저장소에는 2026-11-09 커밋에 한꺼번에 들어 있습니다.</sub>
+<sub>7~11월의 펌웨어·앱 작업은 당시 git으로 관리하지 않았습니다. 그래서 이 저장소에는 남아 있던 두 시점, 2026-10-01 백업 스냅샷과 2026-11-09 최종본으로 들어 있습니다. 10월 1일 커밋에는 팀원 세 명이 만든 모듈(음성 명령·이미지 모델·소리 모델)이 처음 들어오므로 세 사람을 공동 작성자로 표시했습니다.</sub>
 
 ## 6. 현황과 다음 계획
 
@@ -309,18 +310,19 @@ python tools/doa_prototype.py   # 3채널 WAV로 방향 추정 검증
 
 ## 10. 이전 작업 보관
 
-초기 실험 브랜치는 정리하면서 `archive/*` 태그로 남겼습니다.
+초기 실험 브랜치와, GitHub에 올리지 않았던 5월 로컬 프로토타입을 `archive/*` 태그로 남겼습니다.
 - 이 태그들의 이력은 main에 병합되어 있어서 팀원들의 커밋도 그대로 보입니다.
 - 공개하기 전에 하드코딩되어 있던 API 키를 이력에서 지웠습니다.
 
 <details>
-<summary>태그 목록 보기 (10개)</summary>
+<summary>태그 목록 보기 (11개)</summary>
 
 | 태그 | 원래 브랜치 | 내용 |
 |---|---|---|
 | `archive/2026-04-skeleton` | feature/Awareness | 초기 폴더 구조 뼈대 |
 | `archive/2026-05-app-fastapi-whisper` | feature/app | 초기 앱 + FastAPI(Whisper STT + LLM 상황 분석) |
 | `archive/2026-05-app-fastapi-gemini` | feature/app2 | 앱 + FastAPI(Gemini STT + 상황 분석) |
+| `archive/2026-05-firmware-mic-proto` | (로컬 사본) | ESP32-S3 동작·아날로그 마이크 입력 첫 시험 |
 | `archive/2026-05-image-teachable-machine` | feature/image_analysis | 티처블머신 이미지 상황 판단 |
 | `archive/2026-06-firmware-max4466-recording` | feature/Firmware | MAX4466 아날로그 마이크 녹음 프로토타입 |
 | `archive/2026-06-firmware-3mic-oled` | feature/firmPractice | 아날로그 마이크 3개 방향 추정 + OLED |
