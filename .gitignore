@@ -15,6 +15,7 @@ local.properties
 !/.env.example
 !/README.md
 !/README.ja.md
+!/LICENSE
 !/cmd_list.md
 !/firmware/
 !/tools/
