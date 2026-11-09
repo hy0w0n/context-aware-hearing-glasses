@@ -117,6 +117,7 @@ flowchart LR
   `[A5 5A][종류][플래그][순번 u16][길이 u16][내용][CRC16]`
   - 순번으로 빠진 패킷을 셉니다.
   - CRC16은 내용이 깨졌는지 확인하는 검사값입니다.
+- 프레임 종류, BLE 서비스, 명령, LLM 호출 형식은 [통신·명령 명세(API)](docs/protocol.md)에 정리했습니다.
 
 ## 4. 측정 결과
 
@@ -273,7 +274,7 @@ flowchart LR
 | `image_model/` | 이미지 분류 모델(`imageModel.tflite`)과 PC 카메라 데모 |
 | `sound_model/` | Edge Impulse로 학습한 소리 분류 모델(TFLite)과 규격 설명 |
 | `tools/` | PC 도구: 수신기, 방향 추정·빔포밍 프로토타입, 동기 검증, 평가 스크립트 |
-| `docs/` | 기능별 문서(`docs/features/`), 요구분석명세서, 배선 가이드, 시험 문서, 모델 의사결정 기록 |
+| `docs/` | 기능별 문서(`docs/features/`), 통신·명령 명세(`docs/protocol.md`), 요구분석명세서, 배선 가이드, 시험 문서, 모델 의사결정 기록 |
 | `cmd_list.md` | 빌드·시리얼 명령·PC 도구 사용법 모음 |
 
 ### 기능별 문서
