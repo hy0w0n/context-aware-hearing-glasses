@@ -142,7 +142,7 @@ flowchart LR
 
 ## 5. 개발 과정
 
-2026년 3월 기획부터 지금까지 진행한 흐름입니다. 4~9월 팀원들의 작업은 [`archive/*` 태그](#10-이전-작업-보관)에 그대로 남아 있습니다.
+2026년 3월 기획부터 지금까지 진행한 흐름입니다. 4~9월 팀원들의 작업은 [`archive/*` 태그](#10-이전-작업-보관)에 그대로 남아 있습니다. 기능마다 스펙·결과·과정을 따로 보려면 [기능별 브랜치](#기능별-브랜치)를 보세요.
 
 | 8월 · 브레드보드 배선 | 8월 말 · 마이크 배치 첫 스케치 (이후 변경) | 11월 · 현재 시제품 |
 |:---:|:---:|:---:|
@@ -260,6 +260,20 @@ flowchart LR
 | `tools/` | PC 도구: 수신기, 방향 추정·빔포밍 프로토타입, 동기 검증, 평가 스크립트 |
 | `docs/` | 요구분석명세서, 배선 가이드, 시험 문서, 모델 의사결정 기록 |
 | `cmd_list.md` | 빌드·시리얼 명령·PC 도구 사용법 모음 |
+
+### 기능별 브랜치
+
+핵심 기능 4가지마다 브랜치를 따로 두고, 그 기능의 **스펙(처음 정한 요구) · 최종 결과 · 만든 과정**과 관련 코드만 모았습니다. 각 브랜치의 README에서 바로 볼 수 있습니다.
+
+| 브랜치 | 기능 | 담당 |
+|---|---|---|
+| [`feature/1-situation-mode`](https://github.com/hy0w0n/context-aware-hearing-glasses/tree/feature/1-situation-mode) | 상황을 읽어 모드를 바꾼다 (이미지·소리 분류 → 모드 결정) | 최다현 · 안호연 · 정효원 |
+| [`feature/2-beamforming-sound`](https://github.com/hy0w0n/context-aware-hearing-glasses/tree/feature/2-beamforming-sound) | 모드에 맞게 다듬은 소리 (마이크 3개 녹음, 빔포밍, 압축·전송) | 정효원 |
+| [`feature/3-danger-direction`](https://github.com/hy0w0n/context-aware-hearing-glasses/tree/feature/3-danger-direction) | 시야 밖 위험의 방향 표시 (방향 추정, OLED 화살표) | 정효원 · 안호연 |
+| [`feature/4-voice-command`](https://github.com/hy0w0n/context-aware-hearing-glasses/tree/feature/4-voice-command) | 버튼 한 번, 말 한마디 (버튼 → 음성인식 → LLM → 명령) | 송채원 · 정효원 |
+
+- 최종 코드는 main과 같습니다. 브랜치는 기능별로 나눠 보여 주는 용도라 그 브랜치만으로는 빌드되지 않습니다.
+- 7~11월 작업은 당시 git으로 관리하지 않아서, 남아 있는 파일 버전을 파일별 마지막 수정 시각과 만든 사람으로 커밋했습니다(2026-11-09 정리). 5~7월 초기 시제품은 `archive/*` 태그의 원래 커밋을 옮겼습니다.
 
 ### 1) 비밀 값 설정 (가장 먼저)
 
