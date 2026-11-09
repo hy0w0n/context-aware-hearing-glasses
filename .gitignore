@@ -14,6 +14,7 @@ local.properties
 !/.gitignore
 !/.env.example
 !/README.md
+!/README.ja.md
 !/cmd_list.md
 !/firmware/
 !/tools/
