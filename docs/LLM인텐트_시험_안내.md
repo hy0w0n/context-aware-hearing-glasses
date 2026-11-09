@@ -12,7 +12,7 @@
 | `tools/intent_local_baseline.py` | 초기 로컬 TFLite 모델 재현 시험(참고용) |
 | `tools/intent_eval_results/` | 실행 결과 폴더(`report.md`, `predictions.csv`, `confusion.csv`, `summary.json`) |
 
-## 2. 실행 방법 (프로젝트 루트 `D:\capstone`)
+## 2. 실행 방법 (프로젝트 루트 `D:\_CAPSTONE_HYWU_2026\capstone`)
 
 1. 스크립트 점검 — API 호출 없음, 모의 분류기. **결과에 DRY-RUN 표시가 붙으며 인용 금지**
 

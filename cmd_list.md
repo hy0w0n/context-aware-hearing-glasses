@@ -19,13 +19,13 @@
 
 ```powershell
 # WiFi 버전 (평소 기본)
-pio run -d D:\capstone\firmware -e wifi -t upload --upload-port COM3
+pio run -d D:\_CAPSTONE_HYWU_2026\capstone\firmware -e wifi -t upload --upload-port COM3
 
 # BLE 버전 (BLE 테스트할 때)
-pio run -d D:\capstone\firmware -e ble -t upload --upload-port COM3
+pio run -d D:\_CAPSTONE_HYWU_2026\capstone\firmware -e ble -t upload --upload-port COM3
 
 # 빌드만 (업로드 없이 컴파일 확인)
-pio run -d D:\capstone\firmware -e wifi
+pio run -d D:\_CAPSTONE_HYWU_2026\capstone\firmware -e wifi
 
 # 연결된 포트 확인
 pio device list
@@ -42,10 +42,10 @@ pio device list
 pio device monitor -p COM3 -b 115200
 
 # N초만 로그 캡처 (비대화형)
-python D:\capstone\tools\serial_peek.py COM3 12
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\serial_peek.py COM3 12
 
 # 명령 1개 보내고 응답 보기
-python D:\capstone\tools\serial_cmd.py COM3 "info" 5
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\serial_cmd.py COM3 "info" 5
 ```
 
 **펌웨어 시리얼 명령** (모니터에서 타이핑 — 입력 시작하면 stat 출력이 10초 멈춤):
@@ -65,7 +65,7 @@ python D:\capstone\tools\serial_cmd.py COM3 "info" 5
 | `doaoff <n>` | DOA 버스 오프셋 설정 (부팅마다 0 또는 ±1로 바뀜! 재부팅 후 클랩 1회 녹음(raw) → sync_check.py의 ch1-ch3 값 입력. 기본 0, ±1 오차는 각도 3~6° 수준) |
 
 - 로그/명령은 COM3·COM5 **어느 포트에서도 동작** (듀얼 콘솔)
-- 모니터 없이 명령 1개만: `python D:\capstone\tools\serial_cmd.py COM3 "beam" 4` (⚠ COM3는 세션을 닫을 때 보드가 리셋됨 — beam/wifi 설정은 NVS 저장이라 무관하지만, doaoff는 RAM이라 리셋되면 다시 입력)
+- 모니터 없이 명령 1개만: `python D:\_CAPSTONE_HYWU_2026\capstone\tools\serial_cmd.py COM3 "beam" 4` (⚠ COM3는 세션을 닫을 때 보드가 리셋됨 — beam/wifi 설정은 NVS 저장이라 무관하지만, doaoff는 RAM이라 리셋되면 다시 입력)
 - `[stat]` 줄 읽는 법: `mic1/2/3=RMS(min..max)` 소리에 반응하면 정상, `doa=각도°(c신뢰도)`=최근 3초 방향추정(-180~180, 음수=왼쪽, 조용하면 안 뜸), `dsp=µs/유효창수`=DOA 1회 소요시간(현재 ~11700µs)과 게이트 통과 누적 창 수, `ovr` 구독자 있는데 증가하면 병목, `[i2s1=STALL!]` 뜨면 mic3 클럭 문제
 - `[doa] ALERT az=각도° NNdB` = 큰소리 이벤트(EVENT 0x02) 발화 로그 (2초 스로틀)
 
@@ -84,63 +84,63 @@ pio device monitor -p COM3 -b 115200
 
 ## 4. BLE 설정
 
-1. BLE 펌웨어 플래시: `pio run -d D:\capstone\firmware -e ble -t upload --upload-port COM3`
+1. BLE 펌웨어 플래시: `pio run -d D:\_CAPSTONE_HYWU_2026\capstone\firmware -e ble -t upload --upload-port COM3`
 2. 끝 — 광고는 자동 시작(`SmartGlass-HA`), 설정할 것 없음
 3. 수신: Android 앱에서 [BLE 선택→연결], 또는 PC에서:
 
 ```powershell
-python D:\capstone\tools\ble_receiver.py --seconds 10
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\ble_receiver.py --seconds 10
 ```
 
 - BLE는 오디오(16kHz mono)+이미지+이벤트+명령 전부 지원, 단 이미지는 오디오와 대역 공유라 장당 1~3초
 - 폰 nRF Connect 앱으로도 접속 확인 가능 (스캔 → SmartGlass-HA)
 
-## 5. PC 수신/검증 도구 (`D:\capstone\tools\`)
+## 5. PC 수신/검증 도구 (`D:\_CAPSTONE_HYWU_2026\capstone\tools\`)
 
 ```powershell
 # ① 오디오 녹음 + 드랍 통계 (WiFi) — recordings\wavYYMMDDHHMMSS.wav 저장
-python D:\capstone\tools\receiver.py auto --seconds 10
-python D:\capstone\tools\receiver.py auto --seconds 16 --out D:\capstone\recordings\clap.wav
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\receiver.py auto --seconds 10
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\receiver.py auto --seconds 16 --out D:\_CAPSTONE_HYWU_2026\capstone\recordings\clap.wav
 
 # ② 실시간 청취 (WiFi, C++ 저지연) — 스트림 종류는 시리얼 beam/raw로 결정(자동 인식)
-D:\capstone\tools\listen_live.exe                # auto 탐색, 게인 x2 (beam이면 빔포밍 mono 재생)
-D:\capstone\tools\listen_live.exe auto 1         # 게인 x1 (스피커 하울링 시 낮추기)
-D:\capstone\tools\listen_live.exe auto 2 5005 3  # (raw 3ch일 때만) mic3 골라 듣기
+D:\_CAPSTONE_HYWU_2026\capstone\tools\listen_live.exe                # auto 탐색, 게인 x2 (beam이면 빔포밍 mono 재생)
+D:\_CAPSTONE_HYWU_2026\capstone\tools\listen_live.exe auto 1         # 게인 x1 (스피커 하울링 시 낮추기)
+D:\_CAPSTONE_HYWU_2026\capstone\tools\listen_live.exe auto 2 5005 3  # (raw 3ch일 때만) mic3 골라 듣기
 # ⚠ 스피커로 틀면 마이크로 되먹임(하울링, 삐~) — 반드시 이어폰으로! (2026-09-10 실증)
 # 빔포밍 효과 A/B: 시리얼 raw(=mic1 단독 청취) ↔ beam(3-mic 합성) 전환하며 비교
 
 # ③ 이미지 수신 (WiFi) — images\imageYYYYMMDDHHMMSS.jpg 저장
-python D:\capstone\tools\image_receiver.py auto --count 3              # 3장 (기본 3초 간격)
-python D:\capstone\tools\image_receiver.py auto --count 10 --period 1  # 1초 간격 10장 (학습데이터 수집)
-python D:\capstone\tools\image_receiver.py auto --count 1 --now        # 즉시 1장
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\image_receiver.py auto --count 3              # 3장 (기본 3초 간격)
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\image_receiver.py auto --count 10 --period 1  # 1초 간격 10장 (학습데이터 수집)
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\image_receiver.py auto --count 1 --now        # 즉시 1장
 
 # ④ 명령 전송 (WiFi) — 안경 OLED가 바뀌는지 확인
-python D:\capstone\tools\control.py auto mode 2          # 모드: 0실내 1야외 2TV 3일대일 4다인
-python D:\capstone\tools\control.py auto vol +3
-python D:\capstone\tools\control.py auto alert 135 2     # 135° 방향 사이렌 화살표
-python D:\capstone\tools\control.py auto capture
-python D:\capstone\tools\control.py auto ping            # RTT 측정
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\control.py auto mode 2          # 모드: 0실내 1야외 2TV 3일대일 4다인
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\control.py auto vol +3
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\control.py auto alert 135 2     # 135° 방향 사이렌 화살표
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\control.py auto capture
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\control.py auto ping            # RTT 측정
 
 # ⑤ 분석
-python D:\capstone\tools\sync_check.py                   # 최신 녹음의 채널 매핑+동기 오프셋
-python D:\capstone\tools\doa_prototype.py D:\capstone\recordings\az000.wav --expected 0   # 방향추정
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\sync_check.py                   # 최신 녹음의 채널 매핑+동기 오프셋
+python D:\_CAPSTONE_HYWU_2026\capstone\tools\doa_prototype.py D:\_CAPSTONE_HYWU_2026\capstone\recordings\az000.wav --expected 0   # 방향추정
 ```
 
 - `auto` = 브로드캐스트 자동 탐색 (IP 몰라도 됨). 실패 시 시리얼 `info`로 IP 확인 후 `auto` 자리에 IP
 - ③과 ④는 같은 TCP 포트를 쓰므로 **동시 실행 불가** (하나 닫고 실행)
 - BLE 수신: `ble_receiver.py` (§4)
 
-## 6. Android 앱 (`D:\capstone\android\`)
+## 6. Android 앱 (`D:\_CAPSTONE_HYWU_2026\capstone\android\`)
 
 - **설치**: `android\app\build\outputs\apk\debug\app-debug.apk`를 폰으로 복사 → 설치 (알 수 없는 앱 허용)
 - **사용**: WiFi/BLE 선택 → [연결]. WiFi 모드는 폰 핫스팟이 켜져 있으면 자동 탐색 (폰=핫스팟 호스트라 네트워크 불일치 문제 없음)
 - **재빌드**:
 
 ```powershell
-& "$env:USERPROFILE\.gradle\wrapper\dists\gradle-9.3.1-bin\23ovyewtku6u96viwx3xl3oks\gradle-9.3.1\bin\gradle.bat" -p D:\capstone\android assembleDebug
+& "$env:USERPROFILE\.gradle\wrapper\dists\gradle-9.3.1-bin\23ovyewtku6u96viwx3xl3oks\gradle-9.3.1\bin\gradle.bat" -p D:\_CAPSTONE_HYWU_2026\capstone\android assembleDebug
 ```
 
-  (또는 Android Studio로 `D:\capstone\android` 열어서 Run)
+  (또는 Android Studio로 `D:\_CAPSTONE_HYWU_2026\capstone\android` 열어서 Run)
 
 ## 7. 트러블슈팅 요약
 
