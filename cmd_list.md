@@ -1,6 +1,6 @@
 # cmd_list.md — 명령어 치트시트
 
-> 자주 쓰는 명령 모음 (PowerShell 기준, 복붙용). 상세 배경은 CLAUDE.md / proto.md 참조.
+> 자주 쓰는 명령 모음 (PowerShell 기준, 복붙용).
 > 최종 업데이트: 2026-09-10 (DSP 파이프라인 — beam/raw, doaoff, DOA stat 필드 추가)
 
 ---
